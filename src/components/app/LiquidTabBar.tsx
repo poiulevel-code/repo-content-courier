@@ -87,6 +87,11 @@ export function LiquidTabBar({ tabs }: { tabs: readonly Tab[] }) {
   };
 
   return (
+    <>
+    <div
+      aria-hidden="true"
+      className="pointer-events-none fixed inset-x-0 bottom-0 z-20 mx-auto h-[22px] max-w-md bg-background/95 backdrop-blur-xl"
+    />
     <nav className="pointer-events-none fixed inset-x-0 bottom-[18px] z-20 mx-auto max-w-md px-2 pb-0 pt-1 sm:px-3">
       <div
         className="pointer-events-auto touch-none select-none rounded-[2rem] border border-border bg-card p-1.5 shadow-md"
@@ -187,5 +192,6 @@ export function LiquidTabBar({ tabs }: { tabs: readonly Tab[] }) {
         </div>
       </div>
     </nav>
+    </>
   );
 }
