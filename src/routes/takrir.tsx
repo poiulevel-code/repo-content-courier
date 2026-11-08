@@ -21,8 +21,10 @@ export const Route = createFileRoute("/takrir")({
 function Takrir() {
   const { students, takrirler, addTakrirDay, markTakrir, removeTakrirDay, group } = useStore();
   const [date, setDate] = useState(localIso());
+  const [filter, setFilter] = useState<"all" | "verdi" | "vermedi">("all");
   const session = takrirler.find((d) => d.date === date);
   const verdiCount = students.filter((s) => session?.results[s.id] === true).length;
+  const visibleStudents = filter === "all" ? students : students.filter((s) => (session?.results[s.id] === true) === (filter === "verdi"));
 
   return <>
     <div className="mt-4 flex items-center justify-between gap-3">
@@ -48,9 +50,12 @@ function Takrir() {
         <p className="text-center text-sm">{!students.length ? "Henüz talebe yok." : "Bu gün takrir yok."}</p>
       </div>
       : <div className="mt-4">
-        <div className="mb-3 flex items-center justify-between gap-2 text-sm"><span className="font-semibold text-primary">{verdiCount} verdi</span><span className="text-muted-foreground">{students.length - verdiCount} vermedi</span></div>
+        <div className="mb-3 flex items-center justify-between gap-2 text-sm">
+          <button type="button" aria-pressed={filter === "verdi"} onClick={() => setFilter((current) => current === "verdi" ? "all" : "verdi")} className={`rounded-md px-2 py-1 font-semibold transition-colors ${filter === "verdi" ? "bg-primary text-primary-foreground" : "text-primary hover:bg-accent"}`}>{verdiCount} verdi</button>
+          <button type="button" aria-pressed={filter === "vermedi"} onClick={() => setFilter((current) => current === "vermedi" ? "all" : "vermedi")} className={`rounded-md px-2 py-1 transition-colors ${filter === "vermedi" ? "bg-primary font-semibold text-primary-foreground" : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"}`}>{students.length - verdiCount} vermedi</button>
+        </div>
         <div className="overflow-hidden rounded-lg border border-border bg-card">
-        {students.map((s) => {
+        {visibleStudents.map((s) => {
           const verdi = session.results[s.id] === true;
           return <div key={s.id} className="flex min-h-16 items-center gap-3 border-t border-border px-3 py-3 first:border-t-0">
             <Link to="/talebe/$name" params={{ name: s.id }} className="min-w-0 flex-1 break-words text-sm font-medium leading-relaxed hover:text-primary hover:underline">{s.name}</Link>
