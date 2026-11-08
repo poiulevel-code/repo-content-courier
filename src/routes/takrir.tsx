@@ -21,8 +21,10 @@ export const Route = createFileRoute("/takrir")({
 function Takrir() {
   const { students, takrirler, addTakrirDay, markTakrir, removeTakrirDay, group } = useStore();
   const [date, setDate] = useState(localIso());
+  const [filter, setFilter] = useState<"all" | "verdi" | "vermedi">("all");
   const session = takrirler.find((d) => d.date === date);
   const verdiCount = students.filter((s) => session?.results[s.id] === true).length;
+  const visibleStudents = filter === "all" ? students : students.filter((s) => (session?.results[s.id] === true) === (filter === "verdi"));
 
   return <>
     <div className="mt-4 flex items-center justify-between gap-3">
