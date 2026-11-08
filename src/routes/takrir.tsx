@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
-import { ArrowLeft, Calendar, Check } from "@/components/app/icons";
+import { ArrowLeft, Calendar, CalendarCheck, Check, Plus, Trash2 } from "@/components/app/icons";
 import { Button } from "@/components/ui/button";
 import { useStore } from "@/lib/store";
 import { groupLabel } from "@/lib/groups";
@@ -25,30 +25,41 @@ function Takrir() {
   const verdiCount = students.filter((s) => session?.results[s.id] === true).length;
 
   return <>
-    <Button variant="ghost" size="sm" asChild className="mt-3"><Link to="/menu"><ArrowLeft /> Menü</Link></Button>
-    <h2 className="mt-3 font-serif text-3xl font-bold">Takrir</h2>
-    <p className="mt-1 text-sm text-muted-foreground">{groupLabel(group)} Grubu</p>
-    <div className="mt-4 flex items-center justify-between gap-2">
-      <label className="flex min-w-0 items-center gap-2 rounded-lg border border-border px-3 py-2">
-        <Calendar className="h-4 w-4 shrink-0 text-muted-foreground" />
-        <input aria-label="Takrir tarihi" type="date" value={date} onChange={(e) => { if (e.target.value) setDate(e.target.value); }} className="min-w-0 bg-transparent text-sm text-foreground" />
-      </label>
-      {session ? <Button variant="outline" size="sm" onClick={() => { if (confirm("Bu günün takririni silmek istiyor musunuz?")) removeTakrirDay(date); }}>Sil</Button>
-        : <Button size="sm" disabled={!students.length} onClick={() => addTakrirDay(date)}>Takrir Oluştur</Button>}
+    <div className="mt-4 flex items-center justify-between gap-3">
+      <div className="min-w-0">
+        <h2 className="font-serif text-3xl font-bold">Takrir</h2>
+        <p className="mt-1 text-sm text-muted-foreground">{groupLabel(group)} Grubu</p>
+      </div>
+      <Button variant="ghost" size="sm" asChild className="shrink-0"><Link to="/menu"><ArrowLeft /> Menü</Link></Button>
     </div>
-    {!students.length ? <p className="mt-6 text-center text-sm text-muted-foreground">Henüz talebe yok.</p>
-      : !session ? <p className="mt-6 text-center text-sm text-muted-foreground">Bu gün takrir yok.</p>
-      : <div className="mt-4 overflow-hidden rounded-lg border border-border">
-        <div className="bg-brand-soft px-3 py-3 text-sm"><span className="font-semibold">{verdiCount} verdi</span><span className="text-muted-foreground"> · {students.length - verdiCount} vermedi</span></div>
+    <div className="mt-5 border-y border-border py-4">
+      <label className="block text-xs font-medium text-muted-foreground" htmlFor="takrir-date">Takrir tarihi</label>
+      <div className="mt-2 flex min-w-0 items-center gap-2">
+      <div className="flex h-11 min-w-0 flex-1 items-center gap-2 rounded-lg border border-border bg-card px-3">
+        <Calendar className="h-4 w-4 shrink-0 text-muted-foreground" />
+        <input id="takrir-date" aria-label="Takrir tarihi" type="date" value={date} onChange={(e) => { if (e.target.value) setDate(e.target.value); }} className="h-full w-full min-w-0 bg-transparent text-sm text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" />
+      </div>
+      {session ? <Button variant="outline" size="icon" aria-label="Takriri sil" title="Takriri sil" className="h-11 w-11 shrink-0 text-destructive" onClick={() => { if (confirm("Bu günün takririni silmek istiyor musunuz?")) removeTakrirDay(date); }}><Trash2 /></Button>
+        : <Button className="h-11 shrink-0 gap-1.5 px-3 text-xs" disabled={!students.length} onClick={() => addTakrirDay(date)}><Plus className="h-4 w-4" />Takrir Oluştur</Button>}
+      </div>
+    </div>
+    {!students.length || !session ? <div className="flex flex-col items-center gap-3 py-12 text-muted-foreground">
+        <CalendarCheck className="h-9 w-9 text-primary/60" strokeWidth={1.5} />
+        <p className="text-center text-sm">{!students.length ? "Henüz talebe yok." : "Bu gün takrir yok."}</p>
+      </div>
+      : <div className="mt-4">
+        <div className="mb-3 flex items-center justify-between gap-2 text-sm"><span className="font-semibold text-primary">{verdiCount} verdi</span><span className="text-muted-foreground">{students.length - verdiCount} vermedi</span></div>
+        <div className="overflow-hidden rounded-lg border border-border bg-card">
         {students.map((s) => {
           const verdi = session.results[s.id] === true;
-          return <div key={s.id} className="flex items-center gap-3 border-t border-border px-3 py-3">
-            <Link to="/talebe/$name" params={{ name: s.id }} className="min-w-0 flex-1 break-words text-sm hover:text-primary hover:underline">{s.name}</Link>
-            <Button variant="outline" size="sm" aria-label={`${s.name} Takrir Verdi`} aria-pressed={verdi} onClick={() => markTakrir(date, s.id, !verdi)} className={`w-24 shrink-0 ${verdi ? "border-primary bg-primary text-primary-foreground hover:bg-primary/90 hover:text-primary-foreground" : ""}`}>
+          return <div key={s.id} className="flex min-h-16 items-center gap-3 border-t border-border px-3 py-3 first:border-t-0">
+            <Link to="/talebe/$name" params={{ name: s.id }} className="min-w-0 flex-1 break-words text-sm font-medium leading-relaxed hover:text-primary hover:underline">{s.name}</Link>
+            <Button variant="outline" size="sm" aria-label={`${s.name} Takrir Verdi`} aria-pressed={verdi} onClick={() => markTakrir(date, s.id, !verdi)} className={`h-10 w-24 shrink-0 ${verdi ? "border-primary bg-primary text-primary-foreground hover:bg-primary/90 hover:text-primary-foreground" : ""}`}>
               <Check className={verdi ? "opacity-100" : "opacity-0"} /> Verdi
             </Button>
           </div>;
         })}
+        </div>
       </div>}
   </>;
 }
