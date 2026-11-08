@@ -54,8 +54,9 @@ function Takrir() {
           const verdi = session.results[s.id] === true;
           return <div key={s.id} className="flex min-h-16 items-center gap-3 border-t border-border px-3 py-3 first:border-t-0">
             <Link to="/talebe/$name" params={{ name: s.id }} className="min-w-0 flex-1 break-words text-sm font-medium leading-relaxed hover:text-primary hover:underline">{s.name}</Link>
-            <Button variant="outline" size="sm" aria-label={`${s.name} Takrir Verdi`} aria-pressed={verdi} onClick={() => markTakrir(date, s.id, !verdi)} className={`h-10 w-24 shrink-0 ${verdi ? "border-primary bg-primary text-primary-foreground hover:bg-primary/90 hover:text-primary-foreground" : ""}`}>
-              <Check className={verdi ? "opacity-100" : "opacity-0"} /> Verdi
+            <Button variant="outline" size="sm" aria-label={`${s.name} Takrir ${verdi ? "Verdi" : "Vermedi"}`} aria-pressed={verdi} onClick={() => markTakrir(date, s.id, !verdi)} className={`relative h-10 w-24 shrink-0 justify-center px-2 ${verdi ? "border-primary bg-primary text-primary-foreground hover:bg-primary/90 hover:text-primary-foreground" : "text-foreground"}`}>
+              <Check className={`absolute left-2 h-4 w-4 ${verdi ? "opacity-100" : "opacity-0"}`} />
+              <span className="text-center">{verdi ? "Verdi" : "Vermedi"}</span>
             </Button>
           </div>;
         })}
